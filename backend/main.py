@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from database import SessionLocal, engine
 import models
 from fastapi.middleware.cors import CORSMiddleware
+from utils.openai_utils import generate_from_notes
 
 app = FastAPI()
 
@@ -25,6 +26,8 @@ class NoteBase(BaseModel):
     observation: str
     created_at: datetime
     updated_at: datetime | None
+    generated_content: str | None = None 
+
 
 class NoteModel(NoteBase):
     id: int
@@ -93,5 +96,22 @@ async def delete_note(note_id: int, db: db_dependency):
     db.commit()
     return {"message": "Note deleted successfully"}
 
-
-
+@app.post("/generate-content/{note_id}")
+async def generate_content(note_id: int, db: db_dependency):
+    try:
+        note = db.query(models.Note).filter(models.Note.id == note_id).first()
+        if not note:
+            raise HTTPException(status_code=404, detail="Note not found")
+        
+        print(f"Sending observation to OpenAI: {note.observation}")
+        
+        generated_content = await generate_from_notes(note.observation)
+        if not generated_content:
+            raise HTTPException(status_code=500, detail="OpenAI API failed to generate content")
+            
+        note.generated_content = generated_content
+        db.commit()
+        return {"generated_content": generated_content}
+    except Exception as e:
+        print(f"Error in generate_content: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error generating content: {str(e)}")
