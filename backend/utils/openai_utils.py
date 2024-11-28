@@ -6,7 +6,7 @@ prompt = '''You are an experienced Applied Behavioral Analysis (ABA) therapist t
 Convert informal observations into clear, concise, objective, and clinically appropriate notes. 
 The structure of the notes should follow the typical conventions of ABA therapy, with the following headings in this order:
 
-Session Details: Briefly include the date, session duration, and focus of the session.
+Summary: Briefly summarize the session observations.
 Behavioral Observations: Detail the observed behaviors, including what the client did, the setting, and any antecedents (triggers).
 Interventions Used: Describe the techniques or strategies used to address the observed behaviors.
 Client Responses: Include how the client responded to the interventions, noting any progress or challenges.
